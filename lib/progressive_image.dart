@@ -28,9 +28,6 @@ import 'package:progressive_image/src/progress.dart';
 /// smaller version of the target [image] which loads faster and helps in a
 /// better first UI impression.
 ///
-/// The [width] and [height] properties are required for enlarging the thumbnail
-/// to a specified width and height
-///
 /// The [fadeDuration] property controls the fading duration of the [placeholder],
 /// [thumbnail] and target [image]
 ///
@@ -42,8 +39,6 @@ import 'package:progressive_image/src/progress.dart';
 ///   placeholder: AssetImage('assets/example.jpg'),
 ///   thumbnail: NetworkImage('https://backend.example.com/thumbnail.png'),
 ///   image: NetworkImage('https://backend.example.com/image.png'),
-///   height: 300,
-///   width: 500,
 /// );
 /// ```
 class ProgressiveImage extends StatefulWidget {
@@ -52,7 +47,7 @@ class ProgressiveImage extends StatefulWidget {
   ///
   /// Sequence of occurrence: `placeholder` > `thumbnail` > `image`
   ///
-  /// The [placeholder], [thumbnail], [image], [width], [height], [fit], [fadeDuration],
+  /// The [placeholder], [thumbnail], [image], [fit], [fadeDuration],
   /// [alignment], [repeat], and [matchTextDirection] arguments must not be null.
   ///
   /// If [excludeFromSemantics] is true, then [imageSemanticLabel] will be ignored.
@@ -62,8 +57,6 @@ class ProgressiveImage extends StatefulWidget {
   ///   placeholder: AssetImage('assets/example.jpg'),
   ///   thumbnail: NetworkImage('https://backend.example.com/thumbnail.png'),
   ///   image: NetworkImage('https://backend.example.com/image.png'),
-  ///   height: 300,
-  ///   width: 500,
   /// );
   /// ```
   ProgressiveImage({
@@ -71,8 +64,6 @@ class ProgressiveImage extends StatefulWidget {
     @required this.placeholder,
     @required this.thumbnail,
     @required this.image,
-    @required this.width,
-    @required this.height,
     this.fit = BoxFit.fill,
     this.blur = 20,
     this.fadeDuration = const Duration(milliseconds: 500),
@@ -84,8 +75,6 @@ class ProgressiveImage extends StatefulWidget {
   })  : assert(placeholder != null),
         assert(thumbnail != null),
         assert(image != null),
-        assert(width != null),
-        assert(height != null),
         assert(fadeDuration != null),
         assert(alignment != null),
         assert(repeat != null),
@@ -108,7 +97,7 @@ class ProgressiveImage extends StatefulWidget {
   ///
   ///
   /// The [placeholder], [thumbnail], [image], [placeholderScale], [thumbnailScale],
-  /// [imageScale], [width], [height], [fit], [fadeDuration], [alignment], [repeat],
+  /// [imageScale], [fit], [fadeDuration], [alignment], [repeat],
   /// and [matchTextDirection] arguments must not be null.
   ///
   /// ```dart
@@ -117,8 +106,6 @@ class ProgressiveImage extends StatefulWidget {
   ///   placeholder: kTransparentImage,
   ///   thumbnail: 'https://backend.example.com/thumbnail.png',
   ///   image: 'https://backend.example.com/image.png',
-  ///   height: 300,
-  ///   width: 500,
   /// );
   ///
   /// ```
@@ -134,8 +121,6 @@ class ProgressiveImage extends StatefulWidget {
     @required Uint8List placeholder,
     @required String thumbnail,
     @required String image,
-    @required this.width,
-    @required this.height,
     double placeholderScale = 1.0,
     double thumbnailScale = 1.0,
     double imageScale = 1.0,
@@ -150,8 +135,6 @@ class ProgressiveImage extends StatefulWidget {
   })  : assert(placeholder != null),
         assert(thumbnail != null),
         assert(image != null),
-        assert(height != null),
-        assert(width != null),
         placeholder = MemoryImage(placeholder, scale: placeholderScale),
         thumbnail = NetworkImage(thumbnail, scale: thumbnailScale),
         image = NetworkImage(image, scale: imageScale),
@@ -172,7 +155,7 @@ class ProgressiveImage extends StatefulWidget {
   /// passed to their respective [ImageProvider]s (see also [ImageInfo.scale]).
   ///
   /// The [placeholder], [thumbnail], [image], [thumbnailScale], [imageScale],
-  /// [width], [height], [fit], [fadeDuration], [alignment], [repeat] and
+  /// [fit], [fadeDuration], [alignment], [repeat] and
   /// [matchTextDirection] arguments must not be null.
   ///
   /// ```dart
@@ -180,8 +163,6 @@ class ProgressiveImage extends StatefulWidget {
   ///   placeholder: 'assets/example.png',
   ///   thumbnail: 'https://backend.example.com/thumbnail.png',
   ///   image: 'https://backend.example.com/image.png',
-  ///   height: 300,
-  ///   width: 500,
   /// );
   ///```
   ///
@@ -196,8 +177,6 @@ class ProgressiveImage extends StatefulWidget {
     @required String placeholder,
     @required String thumbnail,
     @required String image,
-    @required this.width,
-    @required this.height,
     AssetBundle bundle,
     double placeholderScale,
     double thumbnailScale = 1.0,
@@ -213,8 +192,6 @@ class ProgressiveImage extends StatefulWidget {
   })  : assert(placeholder != null),
         assert(thumbnail != null),
         assert(image != null),
-        assert(height != null),
-        assert(width != null),
         placeholder = placeholderScale != null
             ? ExactAssetImage(placeholder,
                 bundle: bundle, scale: placeholderScale)
@@ -231,14 +208,6 @@ class ProgressiveImage extends StatefulWidget {
 
   /// The target image that
   final ImageProvider image;
-
-  /// The `placeholder`, `thumbnail` and target `image` will acquire this width
-  /// based on the `fit` property.
-  final double width;
-
-  /// The `placeholder`, `thumbnail` and target `image` will acquire this height
-  /// based on the `fit` property.
-  final double height;
 
   /// How to inscribe the image into the space allocated during layout.
   ///
@@ -380,8 +349,6 @@ class _ProgressiveImageState extends State<ProgressiveImage> {
     return Image(
       image: image,
       frameBuilder: frameBuilder,
-      width: widget.width,
-      height: widget.height,
       fit: widget.fit,
       repeat: widget.repeat,
       alignment: widget.alignment,
@@ -394,7 +361,7 @@ class _ProgressiveImageState extends State<ProgressiveImage> {
   @override
   Widget build(BuildContext context) {
     Widget result = Stack(
-      fit: StackFit.loose,
+      fit: StackFit.expand,
       alignment: AlignmentDirectional.center,
       textDirection: TextDirection.ltr,
       children: <Widget>[
@@ -426,8 +393,6 @@ class _ProgressiveImageState extends State<ProgressiveImage> {
               filter:
                   ImageFilter.blur(sigmaX: widget.blur, sigmaY: widget.blur),
               child: Container(
-                // height: apparentHeight(),
-                // width: apparentWidth(),
                 child: Opacity(
                   opacity: 0.0,
                   child: _image(image: widget.thumbnail),
